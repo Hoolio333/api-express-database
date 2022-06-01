@@ -28,4 +28,23 @@ router.post("/", async (req, res) => {
   res.json({ pet: result.rows[0] });
 });
 
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { name, age, type, breed, microchip } = req.body;
+
+  const query =
+    "UPDATE pets set name = $1, age = $2, type = $3, breed = $4, microchip = $5 WHERE id = $6 returning *";
+  const values = [name, age, type, breed, microchip, id];
+  const update = await db.query(query, values);
+  res.json({ pet: update.rows[0] });
+});
+
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = "DELETE from pets WHERE id = $1 returning *";
+  const remove = await db.query(query, [id]);
+  console.log(remove);
+  res.json({ pet: remove });
+});
+
 module.exports = router;
